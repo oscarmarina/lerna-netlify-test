@@ -1,0 +1,7 @@
+{
+  "releaseCommitMessageFormat": "chore: release {{currentTag}}",
+  "commitUrlFormat": "{{host}}/oscarmarina/lerna-netlify-test/commit/{{hash}}",
+  "compareUrlFormat": "{{host}}/oscarmarina/lerna-netlify-test/compare/{{previousTag}}...{{currentTag}}"
+}
+
+
