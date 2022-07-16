@@ -4,9 +4,6 @@ import pluginHtml from '@web/rollup-plugin-html';
 import copy from 'rollup-plugin-copy';
 import minifyHTML from 'rollup-plugin-minify-html-literals';
 import totalBundlesize from '@blockquote/rollup-plugin-total-bundlesize';
-import path from 'path';
-
-console.log(path);
 
 const minifyHTMLLiteralsConfig = {
   options: {
