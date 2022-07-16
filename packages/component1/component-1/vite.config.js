@@ -1,20 +1,9 @@
 /* eslint-disable implicit-arrow-linebreak */
 import { defineConfig } from 'vite';
-import pluginHtml from '@web/rollup-plugin-html';
+import {rollupPluginHTML as pluginHtml} from '@web/rollup-plugin-html';
 import copy from 'rollup-plugin-copy';
-import minifyHTML from 'rollup-plugin-minify-html-literals';
 import totalBundlesize from '@blockquote/rollup-plugin-total-bundlesize';
-import path from 'path';
 
-console.log(path);
-
-const minifyHTMLLiteralsConfig = {
-  options: {
-    minifyOptions: {
-      removeAttributeQuotes: false,
-    },
-  },
-};
 
 const copyConfig = {
   targets: [
@@ -84,7 +73,6 @@ export default defineConfig({
               ),
           ],
         }),
-        minifyHTML(minifyHTMLLiteralsConfig),
         copy(copyConfig),
         totalBundlesize(),
       ],

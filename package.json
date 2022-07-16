@@ -73,6 +73,7 @@
     "eslint-plugin-lit-a11y": "^2.0.0",
     "eslint-plugin-no-only-tests": "^2.0.0",
     "eslint-plugin-wc": "^1.0.0",
+    "eslint-plugin-log-filenames": "^1.0.0",
     "husky": "^4.0.0",
     "karma": "^6.0.0",
     "lerna": "^5.0.0",
@@ -85,5 +86,6 @@
     "stylelint-config-standard-scss": "^4.0.0",
     "tslib": "^2.0.0",
     "typescript": "^4.0.0"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

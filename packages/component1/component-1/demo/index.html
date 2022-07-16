@@ -17,11 +17,8 @@
       import { html, render } from 'lit';
       import '../define/component-1.js';
 
-      const heading = 'World!';
       render(
-        html`<component-1
-          @counter-changed="${ev => console.log('==>', ev.detail)}"
-          .heading=${heading}
+        html`<component-1 @counter-changed="${ev => console.log('==>', ev.detail)}"
           >some light-dom</component-1
         >`,
         document.querySelector('#demo'),

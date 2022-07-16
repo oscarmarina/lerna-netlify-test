@@ -9,6 +9,7 @@
   ],
   "license": "MIT",
   "author": "component-1",
+  "type": "module",
   "main": "index.js",
   "module": "index.js",
   "files": [
@@ -118,17 +119,19 @@
     "extends": "stylelint-config-standard-scss",
     "rules": {
       "custom-property-pattern": null,
-      "max-line-length": null,
       "no-duplicate-selectors": null,
       "color-function-notation": null,
       "alpha-value-notation": null
     }
   },
   "dependencies": {
-    "lit": "^2.0.2"
+    "lit": "^3.2.1"
   },
   "devDependencies": {
-    "@blockquote-web-components/blockquote-base-common-dev-dependencies": "^1.0.0"
+    "@blockquote-web-components/blockquote-base-common-dev-dependencies": "^1.10.3",
+    "@blockquote/test-runner-mocha-style-reporter": "^1.5.1",
+    "rollup-plugin-copy": "^3.5.0",
+    "rollup-plugin-minify-html-literals": "^1.2.6"
   },
   "publishConfig": {
     "access": "public"
