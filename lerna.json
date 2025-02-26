@@ -1,21 +1,18 @@
 {
-  "packages": [
-    "packages/**/*"
-  ],
   "version": "independent",
-  "npmClient": "yarn",
-  "useWorkspaces": true,
+  "npmClient": "npm",
   "command": {
     "version": {
-      "ammend": true,
+      "push": false,
       "conventionalCommits": true,
       "conventionalGraduate": true,
-      "message": "chore: publish"
+      "message": "chore: publish",
+      "ignoreChanges": [
+        "**/demo/**",
+        "**/test/**",
+        "**/*.md"
+      ]
     }
   },
-  "ignoreChanges": [
-    "**/demo/**",
-    "**/test/**",
-    "**/*.md"
-  ]
+  "$schema": "node_modules/lerna/schemas/lerna-schema.json"
 }
