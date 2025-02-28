@@ -32,7 +32,6 @@ var mt=Object.defineProperty;var J=r=>{throw TypeError(r)};var yt=(r,t,e)=>t in 
   *::after {
     box-sizing: inherit;
   }
-
 `;var R,At;class j extends C{constructor(){super();K(this,R);this.heading="Hey there",this.counter=5}render(){return Rt`
       <h1>${this.sayHello(this.heading)}!</h1>
       <button @click=${Z(this,R,At)}>Counter: ${this.counter}</button>

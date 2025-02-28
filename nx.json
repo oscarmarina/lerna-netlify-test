@@ -1,0 +1,22 @@
+{
+  "targetDefaults": {
+    "format": {
+      "cache": true
+    },
+    "test": {
+      "cache": true
+    }
+  },
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
+    "sharedGlobals": [],
+    "production": [
+      "default"
+    ]
+  },
+  "defaultBase": "main"
+}

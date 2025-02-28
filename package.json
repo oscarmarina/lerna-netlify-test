@@ -8,6 +8,7 @@
   "scripts": {
     "eslint": "eslint --fix 'packages/**/*.*'",
     "format": "lerna run format --stream --concurrency 1",
+    "test": "lerna run test --stream --concurrency 1",
     "lint": "npm run eslint && npm run prettier && npm run stylelint",
     "prepare": "husky",
     "prettier": "prettier --write --ignore-path .prettierignore 'packages/**/*.{js,ts,css,scss,html,json}'",
