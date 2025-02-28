@@ -56,9 +56,7 @@
   },
   "lint-staged": {
     "**/*.{js,ts,html}": [
-      "npm run format:prettier",
-      "npm run format:eslint",
-      "npm run format:stylelint"
+      "npm run format"
     ],
     "**/*.json": [
       "npm run format:prettier"
@@ -95,7 +93,13 @@
       "custom-property-pattern": null,
       "no-duplicate-selectors": null,
       "color-function-notation": null,
-      "alpha-value-notation": null
+      "alpha-value-notation": null,
+      "media-feature-name-no-unknown": null,
+      "comment-empty-line-before": null,
+      "declaration-empty-line-before": null,
+      "property-no-vendor-prefix": null,
+      "selector-attribute-quotes": null,
+      "value-no-vendor-prefix": null
     },
     "overrides": [
       {
@@ -119,7 +123,7 @@
     "@blockquote/cem-to-markdown-readme": "^1.0.0",
     "@blockquote/rollup-plugin-externalize-source-dependencies": "^1.0.0",
     "@blockquote/rollup-plugin-total-bundlesize": "^2.2.0",
-    "@blockquote/sass-style-template": "^5.0.0",
+    "@blockquote/sass-style-template": "^5.0.1",
     "@custom-elements-manifest/analyzer": "^0.10.4",
     "@html-eslint/eslint-plugin": "^0.35.0",
     "@html-eslint/parser": "^0.35.0",
@@ -133,7 +137,7 @@
     "@vitest/ui": "^3.0.7",
     "concurrently": "^9.1.2",
     "eslint": "^9.21.0",
-    "eslint-config-prettier": "^10.0.1",
+    "eslint-config-prettier": "^10.0.2",
     "eslint-plugin-html": "^8.1.2",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-lit": "^1.15.0",
@@ -148,7 +152,7 @@
     "prettier": "^3.5.2",
     "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-node-externals": "^8.0.0",
-    "sort-package-json": "^2.14.0",
+    "sort-package-json": "^2.15.0",
     "stylelint": "^16.14.1",
     "stylelint-config-standard-scss": "^14.0.0",
     "tinyglobby": "^0.2.12",
