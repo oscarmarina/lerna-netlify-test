@@ -1,7 +1,6 @@
 ## editors
 **/.idea
 **/.vscode
-**/.nx
 **/.code-workspace
 
 ## system files
@@ -9,19 +8,22 @@
 
 ## npm/yarn
 **/node_modules
-**/npm-debug.log
 **/*-debug.log
 **/yarn-error.log
-**/.npmrc
+**/.pnp
+**/.pnp.*
 
 ## testing
 **/coverage
 **/reports
-**/__snapshots__
-**/screenshots
+**/*screenshots*
+**/*snapshots*
+**/test-results/
+**/playwright-report/
+**/blob-report/
+**/playwright/.cache/
 
 ## build
-**/.env
 **/_site
 **/dist
 **/dev
@@ -31,4 +33,13 @@
 **/*.tgz
 **/*.tsbuildinfo
 **/storybook-static
+
+# local env files
+**/.auth
+**/.env
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
+
 ## end gitignore

@@ -1,25 +1,40 @@
 {
   "name": "lerna-monorepo",
   "version": "1.0.0",
+  "private": true,
   "type": "module",
-  "workspaces": [
-    "packages/*"
-  ],
+  "workspaces": {
+    "packages": [
+      "packages/**/*"
+    ]
+  },
   "scripts": {
+    "analyze": "lerna run analyze --stream --concurrency 1",
+    "clean": "rm package-lock.json && lerna clean",
+    "clean:packages": "lerna exec -- rm -rf ./node_modules && npm run clean:packages:dev && npm run clean:packages:coverage",
+    "clean:packages:dev": "lerna exec -- rm -rf ./dev && lerna exec -- rm -rf ./package-lock.json",
+    "clean:packages:coverage": "lerna exec -- rm -rf ./test/coverage",
     "eslint": "eslint --fix 'packages/**/*.*'",
     "format": "lerna run format --stream --concurrency 1",
-    "test": "lerna run test --stream --concurrency 1",
     "lint": "npm run eslint && npm run prettier && npm run stylelint",
     "prepare": "husky",
     "prettier": "prettier --write --ignore-path .prettierignore 'packages/**/*.{js,ts,css,scss,html,json}'",
-    "start": "lerna run start",
-    "dev": "lerna run dev:vite --stream --concurrency 1",
-    "stylelint": "stylelint -f verbose --ignore-path .prettierignore 'packages/**/*.{js,ts,css,scss,html}'"
+    "push": "git push --follow-tags origin main",
+    "release": " npm ci && npm run test:pre-push && lerna version --no-push",
+    "site": "npm run site:prepare && npm run site:copy",
+    "site:copy": "rm -rf ./site/**/* && node scripts/move-dev-directory.js",
+    "site:prepare": "npm run clean:packages:dev && lerna run dev:vite",
+    "standard": "commit-and-tag-version",
+    "stylelint": "stylelint -f verbose --ignore-path .prettierignore 'packages/**/*.{js,ts,css,scss,html}'",
+    "test": "lerna run test --stream --concurrency 1",
+    "test:pre-push": "npm run test -- --since",
+    "test:scope": "func() { lerna run test --stream --concurrency 1 --scope @blockquote-playground/${1}; }; func",
+    "postversion": "npm run standard"
   },
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional",
-      "@commitlint/config-lerna-scopes"
+      "@commitlint/config-workspace-scopes"
     ],
     "rules": {
       "header-max-length": [
@@ -28,18 +43,6 @@
         150
       ]
     }
-  },
-  "lint-staged": {
-    "**/*.{js,ts,html}": [
-      "npm run lint"
-    ],
-    "**/*.json": [
-      "npm run prettier"
-    ],
-    "**/*.{scss,css}": [
-      "npm run prettier",
-      "npm run stylelint"
-    ]
   },
   "prettier": {
     "bracketSameLine": true,
@@ -76,8 +79,7 @@
       "declaration-empty-line-before": null,
       "property-no-vendor-prefix": null,
       "selector-attribute-quotes": null,
-      "value-no-vendor-prefix": null,
-      "no-descending-specificity": null
+      "value-no-vendor-prefix": null
     },
     "overrides": [
       {
@@ -94,17 +96,42 @@
       }
     ]
   },
+  "dependencies": {
+    "cheerio": "^1.1.2",
+    "recursive-copy": "^2.0.14"
+  },
   "devDependencies": {
-    "@commitlint/cli": "^19.7.1",
-    "@commitlint/config-conventional": "^19.7.1",
-    "@commitlint/config-lerna-scopes": "^19.7.0",
-    "commit-and-tag-version": "^12.5.0",
-    "eslint": "^9.21.0",
-    "globals": "^16.0.0",
+    "@babel/core": "^7.28.3",
+    "@babel/eslint-parser": "^7.28.0",
+    "@babel/eslint-plugin": "^7.27.1",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@commitlint/config-workspace-scopes": "^19.8.1",
+    "@html-eslint/eslint-plugin": "^0.46.1",
+    "@html-eslint/parser": "^0.46.0",
+    "commit-and-tag-version": "^12.6.0",
+    "eslint": "^9.34.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-lit": "^2.1.1",
+    "eslint-plugin-lit-a11y": "^5.1.1",
+    "eslint-plugin-wc": "^3.0.1",
+    "globals": "^16.3.0",
     "husky": "^9.1.7",
-    "lerna": "^8.2.0",
-    "lint-staged": "^15.4.3",
-    "prettier": "^3.5.2",
-    "stylelint": "^16.14.1"
+    "lerna": "^8.2.3",
+    "lint-staged": "^16.1.5",
+    "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
+    "sort-package-json": "^3.4.0",
+    "stylelint": "^16.23.1",
+    "stylelint-config-standard-scss": "^15.0.1",
+    "tslib": "^2.8.1",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.41.0"
+  },
+  "commit-and-tag-version": {
+    "releaseCommitMessageFormat": "chore: release {{currentTag}}",
+    "commitUrlFormat": "{{host}}/oscarmarina/blockquote-web-components/commit/{{hash}}",
+    "compareUrlFormat": "{{host}}/oscarmarina/blockquote-web-components/compare/{{previousTag}}...{{currentTag}}"
   }
 }

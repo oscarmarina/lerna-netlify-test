@@ -1,0 +1,103 @@
+name: Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  workflow_dispatch:
+    inputs:
+      skip-format:
+        description: 'If true, skip formatting step'
+        required: false
+        default: 'false'
+      skip-tests:
+        description: 'If true, skip test step (pre-push)'
+        required: false
+        default: 'false'
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'npm'
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            **/node_modules
+            ~/.npm
+            key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install dependencies
+        run: npm ci
+        env:
+          CI: true
+      - name: Install playwright
+        run: |
+          # Install required browsers for Playwright tests
+          npx playwright install --with-deps chromium webkit
+      - name: Check for skip tokens in commit message or inputs
+        id: check_skip
+        run: |
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          echo "Commit message: $COMMIT_MESSAGE"
+          # Normalize to lowercase to make token detection case-insensitive
+          COMMIT_LOWER=$(echo "$COMMIT_MESSAGE" | tr '[:upper:]' '[:lower:]')
+
+          # Global skip tokens (skip entire CI)
+          if [[ "$COMMIT_LOWER" == *"[skip ci]"* ]] || [[ "$COMMIT_LOWER" == *"[ci skip]"* ]]; then
+            echo "SKIP_FORMAT=true" >> $GITHUB_ENV
+            echo "SKIP_TESTS=true" >> $GITHUB_ENV
+          else
+            # Preferred standard: hyphenated tokens like [skip-format], [skip-tests]
+            if [[ "${{ github.event.inputs.skip-format }}" == 'true' ]] || [[ "$COMMIT_LOWER" == *"[skip-format]"* ]]; then
+              echo "SKIP_FORMAT=true" >> $GITHUB_ENV
+            else
+              echo "SKIP_FORMAT=false" >> $GITHUB_ENV
+            fi
+
+            if [[ "${{ github.event.inputs.skip-tests }}" == 'true' ]] || [[ "$COMMIT_LOWER" == *"[skip-tests]"* ]]; then
+              echo "SKIP_TESTS=true" >> $GITHUB_ENV
+            else
+              echo "SKIP_TESTS=false" >> $GITHUB_ENV
+            fi
+          fi
+      - name: Format and test
+        if: ${{ env.SKIP_FORMAT == 'false' || env.SKIP_TESTS == 'false' }}
+        run: |
+          if [[ "${SKIP_FORMAT}" != 'true' ]]; then
+            echo "Running formatter..."
+            npm run format
+          else
+            echo "Skipping format step"
+          fi
+          if [[ "${SKIP_TESTS}" != 'true' ]]; then
+            echo "Running tests..."
+            npm run test:pre-push
+          else
+            echo "Skipping test step"
+          fi
+
+      - name: CI summary
+        run: |
+          echo "CI summary for run:"
+          echo "SKIP_FORMAT=${SKIP_FORMAT:-false}"
+          echo "SKIP_TESTS=${SKIP_TESTS:-false}"
+          if [[ "${SKIP_FORMAT:-false}" == 'true' ]]; then
+            echo "Format: SKIPPED"
+          else
+            echo "Format: RAN"
+          fi
+          if [[ "${SKIP_TESTS:-false}" == 'true' ]]; then
+            echo "Tests: SKIPPED"
+          else
+            echo "Tests: RAN"
+          fi

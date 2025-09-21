@@ -15,11 +15,11 @@
 ## testing
 **/coverage
 **/reports
-**/*screenshots*
-**/*snapshots*
+**/__snapshots__
+**/screenshots
 
 ## build
-**/_site
+**/site
 **/dist
 **/dev
 **/build

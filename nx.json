@@ -1,5 +1,8 @@
 {
   "targetDefaults": {
+    "analyze": {
+      "cache": true
+    },
     "format": {
       "cache": true
     },
