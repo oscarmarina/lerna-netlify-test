@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Demo - component-c</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:image/x-icon;base64,B" />
+    <meta name="description" content="component-c" />
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        font-family: sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="module">
+      import {html, render} from './entry.js';
+
+      const heading = 'World!';
+      render(
+        html`<component-c
+          @counterchange="${(ev) => console.log('==>', ev.detail)}"
+          .heading="${heading}"
+          >some light-dom</component-c
+        >`,
+        document.body
+      );
+    </script>
+  </body>
+</html>

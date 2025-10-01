@@ -1,0 +1,21 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ComponentA > Semantic Dom and a11y > LIGHT DOM - Structure test > LIGHT DOM 1`] = `
+"<component-a>
+  light-dom
+</component-a>
+"
+`;
+
+exports[`ComponentA > Semantic Dom and a11y > SHADOW DOM - Structure test > SHADOW DOM 1`] = `
+"<h1>
+  Hello, Hey there!
+</h1>
+<button>
+  Counter: 1
+</button>
+<hr>
+<slot>
+</slot>
+"
+`;

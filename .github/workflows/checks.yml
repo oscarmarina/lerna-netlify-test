@@ -1,0 +1,235 @@
+name: Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      skip-format:
+        description: 'Skip formatting step'
+        required: false
+        default: 'false'
+      skip-tests:
+        description: 'Skip test step'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '22.x'
+
+# Use a stable concurrency key: prefer PR number when available, otherwise the branch/ref name.
+concurrency:
+  group: checks-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Fetch base early so commit range detection and lerna --since work reliably
+      - name: Fetch base branch (for lerna --since)
+        if: ${{ github.event_name == 'pull_request' }}
+        run: git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          CI: true
+
+      - name: Generate Nx cache hash
+        id: nx-hash
+        run: echo "hash=${{ hashFiles('nx.json', 'package-lock.json', 'lerna.json', 'eslint.config.js', 'packages/**/package.json', 'packages/**/vite.config.js') }}" >> "$GITHUB_OUTPUT"
+
+      - name: Show Nx cache key (for debugging)
+        # This small step prints the computed Nx cache key and restore-keys so it's easy to
+        # diagnose cache hits/misses in the workflow logs.
+        run: |
+          echo "Computed Nx primary key: $NX_KEY"
+          echo "Restore key (branch fallback): $NX_RESTORE1"
+          echo "Restore key (os fallback): $NX_RESTORE2"
+        env:
+          NX_KEY: ${{ runner.os }}-nx-${{ github.event.pull_request.base.ref || github.ref_name }}-${{ steps.nx-hash.outputs.hash }}
+          NX_RESTORE1: ${{ runner.os }}-nx-${{ github.event.pull_request.base.ref || github.ref_name }}-
+          NX_RESTORE2: ${{ runner.os }}-nx-
+
+      - name: Restore Nx cache
+        id: nx-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            .nx/cache
+            .nx/workspace-data
+          # Primary key deliberately excludes github.sha so it can be reused between commits.
+          key: ${{ runner.os }}-nx-${{ github.event.pull_request.base.ref || github.ref_name }}-${{ steps.nx-hash.outputs.hash }}
+          # Broader restore keys to increase hit probability between branches and across similar hashes.
+          restore-keys: |
+            ${{ runner.os }}-nx-${{ github.event.pull_request.base.ref || github.ref_name }}-
+            ${{ runner.os }}-nx-
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+
+      - name: Install Playwright OS deps (always)
+        run: npx playwright install-deps chromium webkit
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install chromium webkit
+
+      - name: Determine skip (commit msg / inputs / PR)
+        id: skip
+        run: |
+          # Fail fast on unexpected errors and treat unset vars as errors.
+          set -euo pipefail
+
+          echo "Gathering commit messages, PR title and body to check for skip markers..."
+
+          # Resolve a safe base ref: prefer PR base ref, then branch/ref name, fall back to HEAD.
+          BASE_REF="${{ github.event.pull_request.base.ref || github.ref_name || 'HEAD' }}"
+
+          # Try to collect commits in the PR range (base..HEAD). Fallback to last commit.
+          RANGE="origin/${BASE_REF}..HEAD"
+          if git rev-parse --verify origin/${BASE_REF} >/dev/null 2>&1; then
+            COMMIT_MESSAGES=$(git log --pretty=%B "$RANGE" || true)
+          else
+            COMMIT_MESSAGES=$(git log -1 --pretty=%B || true)
+          fi
+
+          # PR title/body from the event (may be empty when workflow_dispatch)
+          PR_TITLE="${{ github.event.pull_request.title || '' }}"
+          PR_BODY="${{ github.event.pull_request.body || '' }}"
+
+          echo "Commit messages:"
+          printf '%s\n' "$COMMIT_MESSAGES"
+          echo "PR title: $PR_TITLE"
+          echo "PR body: $PR_BODY"
+
+          # Combined lowercased text to search reliably
+          LOWER="$(printf "%s\n%s\n%s\n" "$COMMIT_MESSAGES" "$PR_TITLE" "$PR_BODY" | tr '[:upper:]' '[:lower:]')"
+          echo "Combined (lowercased) content to search:"
+          printf '%s\n' "$LOWER"
+
+          # Global skip (skip everything): [skip ci]
+          if printf '%s' "$LOWER" | grep -qiE '\[skip ci\]'; then
+            echo "Detected [skip ci] -> skipping all checks"
+            echo "skip_format=true" >> "$GITHUB_OUTPUT"
+            echo "skip_tests=true" >> "$GITHUB_OUTPUT"
+            echo "SKIP_FORMAT=true" >> "$GITHUB_ENV"
+            echo "SKIP_TESTS=true" >> "$GITHUB_ENV"
+            echo "skip_format_reason=global-ci" >> "$GITHUB_OUTPUT"
+            echo "skip_tests_reason=global-ci" >> "$GITHUB_OUTPUT"
+            echo "SKIP_FORMAT_REASON=global-ci" >> "$GITHUB_ENV"
+            echo "SKIP_TESTS_REASON=global-ci" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          # Initialize skip sources
+          SKIP_FORMAT_INPUT=false
+          SKIP_FORMAT_COMMIT=false
+          SKIP_TESTS_INPUT=false
+          SKIP_TESTS_COMMIT=false
+
+          # Detect input-based skips
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs['skip-format'] }}" == "true" ]]; then
+            SKIP_FORMAT_INPUT=true
+          fi
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs['skip-tests'] }}" == "true" ]]; then
+            SKIP_TESTS_INPUT=true
+          fi
+
+          # Detect commit/PR-based skips: check combined content for markers
+          if printf '%s' "$LOWER" | grep -qiE '\[skip format\]'; then
+            SKIP_FORMAT_COMMIT=true
+          fi
+          if printf '%s' "$LOWER" | grep -qiE '\[skip tests\]'; then
+            SKIP_TESTS_COMMIT=true
+          fi
+
+          # Resolve format skip
+          if [[ "$SKIP_FORMAT_INPUT" == true || "$SKIP_FORMAT_COMMIT" == true ]]; then
+            echo "skip_format=true" >> "$GITHUB_OUTPUT"
+            echo "SKIP_FORMAT=true" >> "$GITHUB_ENV"
+            if [[ "$SKIP_FORMAT_INPUT" == true && "$SKIP_FORMAT_COMMIT" == true ]]; then
+              F_REASON="input+commit"
+            elif [[ "$SKIP_FORMAT_INPUT" == true ]]; then
+              F_REASON="input"
+            else
+              F_REASON="commit"
+            fi
+          else
+            echo "skip_format=false" >> "$GITHUB_OUTPUT"
+            echo "SKIP_FORMAT=false" >> "$GITHUB_ENV"
+            F_REASON="none"
+          fi
+          echo "skip_format_reason=$F_REASON" >> "$GITHUB_OUTPUT"
+          echo "SKIP_FORMAT_REASON=$F_REASON" >> "$GITHUB_ENV"
+
+          # Resolve tests skip
+          if [[ "$SKIP_TESTS_INPUT" == true || "$SKIP_TESTS_COMMIT" == true ]]; then
+            echo "skip_tests=true" >> "$GITHUB_OUTPUT"
+            echo "SKIP_TESTS=true" >> "$GITHUB_ENV"
+            if [[ "$SKIP_TESTS_INPUT" == true && "$SKIP_TESTS_COMMIT" == true ]]; then
+              T_REASON="input+commit"
+            elif [[ "$SKIP_TESTS_INPUT" == true ]]; then
+              T_REASON="input"
+            else
+              T_REASON="commit"
+            fi
+          else
+            echo "skip_tests=false" >> "$GITHUB_OUTPUT"
+            echo "SKIP_TESTS=false" >> "$GITHUB_ENV"
+            T_REASON="none"
+          fi
+          echo "skip_tests_reason=$T_REASON" >> "$GITHUB_OUTPUT"
+          echo "SKIP_TESTS_REASON=$T_REASON" >> "$GITHUB_ENV"
+
+      - name: Format (lerna --since)
+        if: ${{ steps.skip.outputs.skip_format == 'false' }}
+        run: npm run format -- --since=origin/${{ github.event.pull_request.base.ref || github.ref_name }}
+
+      - name: Tests (lerna --since)
+        if: ${{ steps.skip.outputs.skip_tests == 'false' }}
+        run: npm run test -- --since=origin/${{ github.event.pull_request.base.ref || github.ref_name }}
+
+      - name: Save Nx cache
+        if: steps.nx-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            .nx/cache
+            .nx/workspace-data
+          key: ${{ runner.os }}-nx-${{ github.event.pull_request.base.ref || github.ref_name }}-${{ steps.nx-hash.outputs.hash }}
+
+      - name: Summary
+        run: |
+          {
+            echo "## Checks Workflow Summary";
+            echo "* Trigger: ${{ github.event_name }}";
+            echo "* Skip format: ${SKIP_FORMAT}";
+            echo "* Skip tests: ${SKIP_TESTS}";
+            echo "* Format skip reason: ${SKIP_FORMAT_REASON}";
+            echo "* Tests skip reason: ${SKIP_TESTS_REASON}";
+            if [[ "${SKIP_FORMAT}" == 'true' ]]; then echo "- Formatting: SKIPPED"; else echo "- Formatting: RAN"; fi
+            if [[ "${SKIP_TESTS}" == 'true' ]]; then echo "- Tests: SKIPPED"; else echo "- Tests: RAN"; fi
+          } >> "$GITHUB_STEP_SUMMARY"

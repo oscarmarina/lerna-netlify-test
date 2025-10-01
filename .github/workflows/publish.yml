@@ -1,0 +1,186 @@
+name: Publish
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+    inputs:
+      skip-lerna:
+        description: 'If true, skip lerna version/publish steps'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write # needed so Lerna can push tags/versions
+
+env:
+  NODE_VERSION: '22.x'
+
+concurrency:
+  # Prefer grouping by PR number when available (avoids mixing different PRs), otherwise use branch/ref name.
+  group: publish-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true) }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # persist-credentials defaults to true, keep it to allow pushes
+          persist-credentials: true
+          fetch-tags: true
+
+      # Fetch base early so commit-range detection can reference origin/<base>
+      - name: Fetch base branch (for commit range detection)
+        if: ${{ github.event_name == 'pull_request' }}
+        run: git fetch origin ${{ github.event.pull_request.base.ref }}
+
+      - name: Show git info (debug)
+        run: |
+          echo "GITHUB_SHA: $GITHUB_SHA"
+          echo "Current ref: ${{ github.ref }}"
+          echo "Workspace: $GITHUB_WORKSPACE"
+          git rev-parse --is-inside-work-tree || true
+          echo ".git contents:"
+          ls -la .git || true
+          echo "Git remotes:"
+          git remote -v || true
+          echo "Last commits (top 5):"
+          git --no-pager log -n 5 --oneline || true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Authenticate npm (expects a CI Automation token)
+        run: |
+          # Use an npm "Automation" token created in https://www.npmjs.com/settings/<your-account>/tokens
+          # This token must be of type "Automation" so that publish works in CI even if account has 2FA.
+          if [ -z "${{ secrets.NPM_TOKEN }}" ]; then
+            echo "ERROR: NPM_TOKEN secret is not set"
+            exit 1
+          fi
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+          # quick check to validate token - will fail early if token invalid
+          echo "Testing npm authentication with 'npm whoami' (should show the user that owns the token)..."
+          npm whoami
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          CI: true
+
+      - name: Generate Nx cache hash
+        id: nx-hash
+        run: echo "hash=${{ hashFiles('nx.json', 'package-lock.json', 'lerna.json', 'eslint.config.js', 'packages/**/package.json', 'packages/**/vite.config.js') }}" >> "$GITHUB_OUTPUT"
+
+      - name: Show Nx cache key (debug)
+        run: |
+          echo "Computed Nx primary key: $NX_KEY"
+          echo "Restore key (branch fallback): $NX_RESTORE1"
+          echo "Restore key (os fallback): $NX_RESTORE2"
+        env:
+          NX_KEY: ${{ runner.os }}-nx-${{ github.event.pull_request.base.ref || github.ref_name }}-${{ steps.nx-hash.outputs.hash }}
+          NX_RESTORE1: ${{ runner.os }}-nx-${{ github.event.pull_request.base.ref || github.ref_name }}-
+          NX_RESTORE2: ${{ runner.os }}-nx-
+
+      - name: Restore Nx cache
+        id: nx-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            .nx/cache
+            .nx/workspace-data
+          # Primary key deliberately excludes github.sha so it can be reused between commits.
+          key: ${{ runner.os }}-nx-${{ github.event.pull_request.base.ref || github.ref_name }}-${{ steps.nx-hash.outputs.hash }}
+          restore-keys: |
+            ${{ runner.os }}-nx-${{ github.event.pull_request.base.ref || github.ref_name }}-
+            ${{ runner.os }}-nx-
+
+      - name: Determine skip (commit msg / inputs / PR)
+        id: skip
+        run: |
+          set -euo pipefail
+          echo "Gathering commit messages, PR title and body to check for skip markers..."
+          BASE_REF="${{ github.event.pull_request.base.ref || github.ref_name || 'HEAD' }}"
+          RANGE="origin/${BASE_REF}..HEAD"
+          if git rev-parse --verify origin/${BASE_REF} >/dev/null 2>&1; then
+            COMMIT_MESSAGES=$(git log --pretty=%B "$RANGE" || true)
+          else
+            COMMIT_MESSAGES=$(git log -1 --pretty=%B || true)
+          fi
+          PR_TITLE="${{ github.event.pull_request.title || '' }}"
+          PR_BODY="${{ github.event.pull_request.body || '' }}"
+          echo "Commit messages:"
+          printf '%s\n' "$COMMIT_MESSAGES"
+          echo "PR title: $PR_TITLE"
+          echo "PR body: $PR_BODY"
+          LOWER="$(printf "%s\n%s\n%s\n" "$COMMIT_MESSAGES" "$PR_TITLE" "$PR_BODY" | tr '[:upper:]' '[:lower:]')"
+          echo "Combined (lowercased) content to search:"
+          printf '%s\n' "$LOWER"
+          SKIP_INPUT=false
+          SKIP_COMMIT=false
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.skip-lerna }}" == "true" ]]; then
+            SKIP_INPUT=true
+          fi
+          if printf '%s' "$LOWER" | grep -qiE '\[skip lerna\]|\[skip ci\]'; then
+            SKIP_COMMIT=true
+          fi
+          if [[ "$SKIP_INPUT" == true || "$SKIP_COMMIT" == true ]]; then
+            echo "skip_lerna=true" >> "$GITHUB_OUTPUT"
+            echo "SKIP_LERNA=true" >> "$GITHUB_ENV"
+            if [[ "$SKIP_INPUT" == true && "$SKIP_COMMIT" == true ]]; then
+              REASON="input+commit"
+            elif [[ "$SKIP_INPUT" == true ]]; then
+              REASON="input"
+            else
+              REASON="commit"
+            fi
+            echo "skip_lerna_reason=$REASON" >> "$GITHUB_OUTPUT"
+            echo "SKIP_LERNA_REASON=$REASON" >> "$GITHUB_ENV"
+          else
+            echo "skip_lerna=false" >> "$GITHUB_OUTPUT"
+            echo "SKIP_LERNA=false" >> "$GITHUB_ENV"
+            echo "skip_lerna_reason=none" >> "$GITHUB_OUTPUT"
+            echo "SKIP_LERNA_REASON=none" >> "$GITHUB_ENV"
+          fi
+
+      - name: Version & publish (Lerna)
+        if: ${{ steps.skip.outputs.skip_lerna == 'false' }}
+        run: |
+          # Lerna will create tags/commits and push them using the repository token
+          npx lerna version --yes
+          npx lerna publish from-package --yes
+
+      - name: Save Nx cache
+        if: steps.skip.outputs.skip_lerna == 'false' && steps.nx-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            .nx/cache
+            .nx/workspace-data
+          key: ${{ runner.os }}-nx-${{ github.event.pull_request.base.ref || github.ref_name }}-${{ steps.nx-hash.outputs.hash }}
+
+      - name: Summary
+        run: |
+          {
+            echo "## Publish Workflow Summary";
+            echo "* Trigger: ${{ github.event_name }}";
+            echo "* Skip Lerna: ${SKIP_LERNA}";
+            echo "* Skip reason: ${SKIP_LERNA_REASON}";
+            if [[ "${SKIP_LERNA}" == "true" ]]; then
+              echo "Lerna steps were skipped. Reason: ${SKIP_LERNA_REASON}";
+            else
+              echo "Lerna version & publish executed.";
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,34 @@
+## editors
+**/.idea
+**/.vscode
+**/.nx
+**/.code-workspace
+
+## system files
+**/.DS_Store
+
+## npm/yarn
+**/node_modules
+**/npm-debug.log
+**/*-debug.log
+**/yarn-error.log
+**/.npmrc
+
+## testing
+**/coverage
+**/reports
+**/__snapshots__
+**/screenshots
+
+## build
+**/.env
+**/_site
+**/dist
+**/dev
+**/build
+**/.tmp
+**/.wireit
+**/*.tgz
+**/*.tsbuildinfo
+**/storybook-static
+## end gitignore
