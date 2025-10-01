@@ -12,7 +12,7 @@ exports[`ComponentA > Semantic Dom and a11y > SHADOW DOM - Structure test > SHAD
   Hello, Hey there!
 </h1>
 <button>
-  Counter: 1
+  Counter: 5
 </button>
 <hr>
 <slot>
