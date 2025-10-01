@@ -38,8 +38,8 @@ suite('ComponentC', () => {
       fixtureCleanup();
     });
 
-    test('has a default heading "Hey there" and counter 15', () => {
-      const button = elLocator.getByText('Counter: 15').query();
+    test('has a default heading "Hey there" and counter 20', () => {
+      const button = elLocator.getByText('Counter: 20').query();
       const heading = elLocator.getByText('Hey there').query();
       assert.isOk(button);
       assert.isOk(heading);
@@ -69,16 +69,16 @@ suite('ComponentC', () => {
     });
 
     test('should increment value on click', async () => {
-      const button = elLocator.getByText('Counter: 15');
+      const button = elLocator.getByText('Counter: 20');
       const elButton = button.query();
       await button.dblClick();
       await el.updateComplete;
-      assert.include(elButton.textContent, 'Counter: 17');
+      assert.include(elButton.textContent, 'Counter: 22');
     });
 
     test('counterchange event is dispatched', async () => {
       const spyEvent = vi.spyOn(el, 'dispatchEvent');
-      const button = elLocator.getByText('Counter: 15');
+      const button = elLocator.getByText('Counter: 20');
       await button.click();
       await el.updateComplete;
       const calledWithCounterChange = spyEvent.mock.lastCall?.[0].type === 'counterchange';

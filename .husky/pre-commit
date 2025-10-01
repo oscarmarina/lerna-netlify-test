@@ -1,2 +1,5 @@
-npx --no-install lint-staged --concurrent false
-npm test -- --since
+# Solo ejecuta en entorno local, no en CI
+if [ -z "$CI" ]; then
+  npx --no-install lint-staged --concurrent false
+  npm test -- --since
+fi

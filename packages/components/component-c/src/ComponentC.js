@@ -36,7 +36,7 @@ export class ComponentC extends LitElement {
   constructor() {
     super();
     this.heading = 'Hey there';
-    this.counter = 15;
+    this.counter = 20;
   }
 
   /**
