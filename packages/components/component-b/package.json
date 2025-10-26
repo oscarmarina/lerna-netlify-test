@@ -1,6 +1,6 @@
 {
   "name": "@blockquote-playground/component-b",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Webcomponent component-b following open-wc recommendations",
   "keywords": [
     "lit",
