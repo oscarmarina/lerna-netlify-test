@@ -1,5 +1,5 @@
 # Solo ejecuta en entorno local, no en CI
 if [ -z "$CI" ]; then
   npx --no-install lint-staged --concurrent false
-  npm test -- --since
+  npm run test:pre-push
 fi
