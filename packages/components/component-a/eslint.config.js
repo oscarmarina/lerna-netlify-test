@@ -125,7 +125,7 @@ const htmlFilesConfig = [htmlEslint.configs['flat/recommended']].map((conf) => (
 const htmlFilesRules = {
   files: ['**/*.html'],
   rules: {
-    '@html-eslint/indent': ['error', 2],
+    '@html-eslint/indent': 'off',
     '@html-eslint/require-closing-tags': 'off',
     '@html-eslint/no-extra-spacing-attrs': 'off',
     '@html-eslint/attrs-newline': 'off',
