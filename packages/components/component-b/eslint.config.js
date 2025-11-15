@@ -187,25 +187,11 @@ export default [
     },
 
     rules: {
-      'class-methods-use-this': 'off',
       'no-unused-expressions': [
         'error',
         {
           allowShortCircuit: true,
           allowTernary: true,
-        },
-      ],
-      'object-curly-newline': 'off',
-      indent: [
-        'error',
-        2,
-        {
-          SwitchCase: 1,
-          ignoredNodes: [
-            'PropertyDefinition',
-            'TemplateLiteral *',
-            'ArrowFunctionExpression ClassExpression',
-          ],
         },
       ],
       'no-empty-function': 'error',
