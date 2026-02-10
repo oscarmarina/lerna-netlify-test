@@ -1,25 +1,23 @@
 import {describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi, chai} from 'vitest';
-import {utils} from 'vitest/browser';
+import {type LocatorSelectors, utils} from 'vitest/browser';
 import {fixture, fixtureCleanup} from '@open-wc/testing-helpers';
 import {chaiA11yAxe} from 'chai-a11y-axe';
 import {getDiffableHTML} from '@open-wc/semantic-dom-diff/get-diffable-html.js';
 import {html} from 'lit';
-import '../src/define/component-a.js';
+import {ComponentB} from '../src/ComponentB.js';
+import '../src/define/component-b.js';
 
 chai.use(chaiA11yAxe);
 
-describe('ComponentA', () => {
-  /**
-   * @type {import('../src/index').ComponentA}
-   */
-  let el;
-  let elShadowRoot;
-  let elLocator;
+describe('ComponentB', () => {
+  let el: ComponentB;
+  let elShadowRoot: string;
+  let elLocator: LocatorSelectors;
 
   describe('Semantic Dom and a11y', () => {
     beforeAll(async () => {
-      el = await fixture(html`<component-a>light-dom</component-a>`);
-      elShadowRoot = el?.shadowRoot?.innerHTML;
+      el = await fixture(html`<component-b>light-dom</component-b>`);
+      elShadowRoot = el?.shadowRoot!.innerHTML;
       elLocator = utils.getElementLocatorSelectors(el);
     });
 
@@ -49,7 +47,7 @@ describe('ComponentA', () => {
 
   describe('Events ', () => {
     beforeEach(async () => {
-      el = await fixture(html`<component-a></component-a>`);
+      el = await fixture(html`<component-b></component-b>`);
       elLocator = utils.getElementLocatorSelectors(el);
     });
 
@@ -59,7 +57,7 @@ describe('ComponentA', () => {
 
     it('should increment value on click', async () => {
       const button = elLocator.getByText('Counter: 5');
-      const elButton = button.query();
+      const elButton = button.query()!;
       await button.dblClick();
       await el.updateComplete;
       expect(elButton.textContent).toContain('Counter: 7');
@@ -75,7 +73,7 @@ describe('ComponentA', () => {
 
   describe('Override ', () => {
     beforeAll(async () => {
-      el = await fixture(html`<component-a heading="attribute heading"></component-a>`);
+      el = await fixture(html`<component-b heading="attribute heading"></component-b>`);
       elLocator = utils.getElementLocatorSelectors(el);
 
       return () => {

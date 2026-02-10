@@ -1,2 +1,2 @@
-export {html, render} from 'lit';
+export {html, css, render} from 'lit';
 import '../src/define/component-c.js';

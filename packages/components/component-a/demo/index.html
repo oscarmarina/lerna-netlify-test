@@ -4,7 +4,7 @@
     <title>Demo - component-a</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" href="data:image/x-icon;base64,B" />
+    <link rel="icon" href="data:," />
     <meta name="description" content="component-a" />
     <style>
       html,
@@ -21,13 +21,11 @@
 
       const heading = 'World!';
       render(
-        html`
-          <component-a
-            @counterchange="${(ev) => console.log('==>', ev.detail)}"
-            .heading="${heading}"
-            >some light-dom</component-a
-          >
-        `,
+        html`<component-a
+          @counterchange="${(ev) => console.log('==>', ev.detail)}"
+          .heading="${heading}"
+          >some light-dom</component-a
+        >`,
         document.body
       );
     </script>

@@ -1,10 +1,11 @@
 import {html, LitElement} from 'lit';
-import {styles} from './styles/component-c-styles.css.js';
+import {property} from 'lit/decorators.js';
+import {styles} from './styles/component-b-styles.css.js';
 
 /**
  * ![Lit](https://img.shields.io/badge/lit-3.0.0-blue.svg)
  *
- * ## `<component-c>`
+ * ## `<component-b>`
  * An example element.
  *
  * @attribute heading
@@ -12,37 +13,22 @@ import {styles} from './styles/component-c-styles.css.js';
  * @fires counterchange - Indicates when the count changes
  * @slot - This element has a slot
  */
-export class ComponentC extends LitElement {
-  /**
-   * @override
-   */
-  static styles = [styles];
+export class ComponentB extends LitElement {
+  static override styles = [styles];
 
   /**
-   * @override
+   * The heading to say "Hello" to.
    */
-  static properties = {
-    /**
-     * The heading to say "Hello" to.
-     */
-    heading: {type: String},
-
-    /**
-     * The number of times the button has been clicked.
-     */
-    counter: {type: Number},
-  };
-
-  constructor() {
-    super();
-    this.heading = 'Hey there';
-    this.counter = 20;
-  }
+  @property({type: String})
+  heading = 'Hey there';
 
   /**
-   * @override
+   * The number of times the button has been clicked.
    */
-  render() {
+  @property({type: Number})
+  counter = 5;
+
+  override render() {
     return html`
       <h1>${this.sayHello(this.heading)}!</h1>
       <button @click=${this.#onClick}>Counter: ${this.counter}</button>
@@ -58,10 +44,16 @@ export class ComponentC extends LitElement {
 
   /**
    * Formats a greeting
-   * @param heading {string} The heading to say "Hello" to
+   * @param heading The heading to say "Hello" to
    * @returns {string} A greeting directed at `heading`
    */
-  sayHello(heading) {
+  sayHello(heading: string): string {
     return `Hello, ${heading}`;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'component-b': ComponentB;
   }
 }

@@ -4,7 +4,6 @@ export const styles = css`
   :host {
     display: block;
     box-sizing: border-box;
-    background-color: orange;
   }
 
   :host([hidden]),
