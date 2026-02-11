@@ -1,12 +1,6 @@
-import { readdirSync, statSync, readFileSync, writeFileSync, existsSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, resolve, join, sep } from 'path';
-import copy from 'recursive-copy';
-import * as cheerio from 'cheerio';
-
-const __filename = fileURLToPath(import.meta.url);
-// eslint-disable-next-line no-unused-vars
-const __dirname = dirname(__filename);
+import { readdirSync, statSync, readFileSync, writeFileSync, existsSync, cpSync } from 'fs';
+import { resolve, join, sep } from 'path';
+import { parseHTML } from 'linkedom';
 
 /**
  * Safe error to string conversion
@@ -73,14 +67,15 @@ function loadIndexTemplate(indexHtmlPath) {
   </body></html>`;
 
   const html = existsSync(indexHtmlPath) ? readFileSync(indexHtmlPath, 'utf8') : defaultHtml;
-  const $indexHtml = cheerio.load(html);
+  const { document } = parseHTML(html);
   // Reset the list to avoid duplicates across runs
-  $indexHtml('ol').remove();
-  if ($indexHtml('body').length === 0) {
-    $indexHtml.root().append('<body></body>');
+  document.querySelectorAll('ol').forEach((ol) => ol.remove());
+  if (!document.body) {
+    document.documentElement.insertAdjacentHTML('beforeend', '<body></body>');
   }
-  $indexHtml('body').append('<ol></ol>');
-  return $indexHtml;
+  const ol = document.createElement('ol');
+  document.body.append(ol);
+  return document;
 }
 
 function getAllDev(
@@ -149,9 +144,9 @@ async function main() {
     }
 
     try {
-      const results = await copy(dev.devDirectory, dest);
-      successful.push({ dev, results });
-      if (opts.verbose) console.info(`${results.length} file(s) copied - ${dev.devDirectoryName}`);
+      cpSync(dev.devDirectory, dest, { recursive: true });
+      successful.push({ dev });
+      if (opts.verbose) console.info(`Copied - ${dev.devDirectoryName}`);
       else console.info(`${dev.devDirectoryName} copied`);
     } catch (err) {
       failed.push({ dev, error: err });
@@ -161,10 +156,11 @@ async function main() {
   }
 
   // Load template and write the list once to avoid race conditions
-  const $indexHtml = loadIndexTemplate(INDEX_HTML_PATH);
-  const $ol = $indexHtml('ol');
+  const document = loadIndexTemplate(INDEX_HTML_PATH);
+  const ol = document.querySelector('ol');
   successful.forEach(({ dev }) => {
-    $ol.append(
+    ol.insertAdjacentHTML(
+      'beforeend',
       `<li>
           <ul>
             <li><a href="${dev.devDirectoryName}/index.html">⇉ ${dev.devDirectoryName}</a></li>
@@ -175,7 +171,7 @@ async function main() {
   });
 
   try {
-    writeFileSync(INDEX_HTML_PATH, '<!DOCTYPE html>\n' + $indexHtml.html(), 'utf8');
+    writeFileSync(INDEX_HTML_PATH, '<!DOCTYPE html>\n' + document.documentElement.outerHTML, 'utf8');
     console.info(`Wrote index to ${INDEX_HTML_PATH}`);
   } catch (err) {
     console.error(`Failed to write index.html: ${stringifyError(err)}`);
