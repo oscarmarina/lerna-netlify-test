@@ -1,19 +1,91 @@
-### \<component-c>
+![Lit](https://img.shields.io/badge/lit-3.0.0-blue.svg)
 
-#### Usage
+## `<component-c>`
+An example element.
 
-Install
 
-```bash
-npm i
-```
+### `src/ComponentC.ts`:
 
-Generate `README.md` from a `custom-elements.json` file
+#### class: `ComponentC`, `component-c`
 
-```bash
-npm run analyze
-```
+##### Fields
 
-Husky is pre-installed.
+| Name      | Privacy | Type     | Default       | Description                                      | Inherited From |
+| --------- | ------- | -------- | ------------- | ------------------------------------------------ | -------------- |
+| `heading` |         | `string` | `'Hey there'` | The heading to say "Hello" to.                   |                |
+| `counter` |         | `number` | `5`           | The number of times the button has been clicked. |                |
 
-After `git init`; run `npm run prepare` to set up Husky and its Git hooks.
+##### Methods
+
+| Name       | Privacy | Description        | Parameters        | Return   | Inherited From |
+| ---------- | ------- | ------------------ | ----------------- | -------- | -------------- |
+| `sayHello` |         | Formats a greeting | `heading: string` | `string` |                |
+
+##### Events
+
+| Name            | Type          | Description                      | Inherited From |
+| --------------- | ------------- | -------------------------------- | -------------- |
+| `counterchange` | `CustomEvent` | Indicates when the count changes |                |
+
+##### Attributes
+
+| Name      | Field   | Inherited From |
+| --------- | ------- | -------------- |
+| `heading` | heading |                |
+| `counter` | counter |                |
+
+##### Slots
+
+| Name | Description             |
+| ---- | ----------------------- |
+|      | This element has a slot |
+
+<details><summary>Private API</summary>
+
+##### Methods
+
+| Name       | Privacy | Description | Parameters | Return | Inherited From |
+| ---------- | ------- | ----------- | ---------- | ------ | -------------- |
+| `#onClick` | private |             |            |        |                |
+
+</details>
+
+<hr/>
+
+#### Exports
+
+| Kind | Name         | Declaration | Module            | Package |
+| ---- | ------------ | ----------- | ----------------- | ------- |
+| `js` | `ComponentC` | ComponentC  | src/ComponentC.ts |         |
+
+### `src/index.ts`:
+
+#### Exports
+
+| Kind | Name         | Declaration | Module          | Package |
+| ---- | ------------ | ----------- | --------------- | ------- |
+| `js` | `ComponentC` | ComponentC  | ./ComponentC.js |         |
+
+### `src/define/component-c.ts`:
+
+#### Exports
+
+| Kind                        | Name          | Declaration | Module             | Package |
+| --------------------------- | ------------- | ----------- | ------------------ | ------- |
+| `custom-element-definition` | `component-c` | ComponentC  | /src/ComponentC.js |         |
+
+### `src/styles/component-c-styles.css.ts`:
+
+#### Variables
+
+| Name     | Description | Type |
+| -------- | ----------- | ---- |
+| `styles` |             |      |
+
+<hr/>
+
+#### Exports
+
+| Kind | Name     | Declaration | Module                               | Package |
+| ---- | -------- | ----------- | ------------------------------------ | ------- |
+| `js` | `styles` | styles      | src/styles/component-c-styles.css.ts |         |
