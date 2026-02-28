@@ -64,6 +64,9 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
+      - name: Install npm 11.11.0
+        run: npm install -g npm@11.11.0
+
       - name: Authenticate npm (expects a CI Automation token)
         run: |
           # Use an npm "Automation" token created in https://www.npmjs.com/settings/<your-account>/tokens

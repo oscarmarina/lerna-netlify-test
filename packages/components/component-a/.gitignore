@@ -17,7 +17,7 @@
 **/coverage
 **/reports
 **/*screenshots*
-**/*snapshots*
+!**/__snapshots__
 **/test-results/
 **/playwright-report/
 **/blob-report/
