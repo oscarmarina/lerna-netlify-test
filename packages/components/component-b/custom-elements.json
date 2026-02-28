@@ -1,0 +1,165 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "src/ComponentB.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "![Lit](https://img.shields.io/badge/lit-3.0.0-blue.svg)\n\n## `<component-b>`\nAn example element.",
+          "name": "ComponentB",
+          "slots": [
+            {
+              "description": "This element has a slot",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "heading",
+              "type": {
+                "text": "string"
+              },
+              "default": "'Hey there'",
+              "description": "The heading to say \"Hello\" to.",
+              "attribute": "heading"
+            },
+            {
+              "kind": "field",
+              "name": "counter",
+              "type": {
+                "text": "number"
+              },
+              "default": "5",
+              "description": "The number of times the button has been clicked.",
+              "attribute": "counter"
+            },
+            {
+              "kind": "method",
+              "name": "#onClick",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "sayHello",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "heading",
+                  "type": {
+                    "text": "string"
+                  },
+                  "description": "The heading to say \"Hello\" to"
+                }
+              ],
+              "description": "Formats a greeting"
+            }
+          ],
+          "events": [
+            {
+              "name": "counterchange",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Indicates when the count changes"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "heading",
+              "type": {
+                "text": "string"
+              },
+              "default": "'Hey there'",
+              "description": "The heading to say \"Hello\" to.",
+              "fieldName": "heading"
+            },
+            {
+              "name": "counter",
+              "type": {
+                "text": "number"
+              },
+              "default": "5",
+              "description": "The number of times the button has been clicked.",
+              "fieldName": "counter"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "component-b",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ComponentB",
+          "declaration": {
+            "name": "ComponentB",
+            "module": "src/ComponentB.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/index.ts",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ComponentB",
+          "declaration": {
+            "name": "ComponentB",
+            "module": "./ComponentB.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/define/component-b.ts",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "component-b",
+          "declaration": {
+            "name": "ComponentB",
+            "module": "/src/ComponentB.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/styles/component-b-styles.css.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "styles",
+          "default": "css` :host { display: block; box-sizing: border-box; } :host([hidden]), [hidden] { display: none !important; } *, *::before, *::after { box-sizing: inherit; } `"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "styles",
+          "declaration": {
+            "name": "styles",
+            "module": "src/styles/component-b-styles.css.ts"
+          }
+        }
+      ]
+    }
+  ]
+}
