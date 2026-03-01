@@ -1,0 +1,15 @@
+packages:
+  - packages/*
+
+linkWorkspacePackages: true
+
+onlyBuiltDependencies:
+  - esbuild
+  - nx
+  - rs-module-lexer
+  - unrs-resolver
+
+publicHoistPattern:
+  - '*eslint*'
+  - '*babel*'
+  - '*stylelint*'
