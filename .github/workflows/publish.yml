@@ -17,7 +17,7 @@ permissions:
   contents: write # needed so Lerna can push tags/versions
 
 env:
-  NODE_VERSION: '22.x'
+  NODE_VERSION: '24.x'
 
 concurrency:
   # Prefer grouping by PR number when available (avoids mixing different PRs), otherwise use branch/ref name.
@@ -64,8 +64,8 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
-      - name: Install npm 11.11.0
-        run: npm install -g npm@11.11.0
+      - name: Install npm
+        run: npm install -g npm@11.11.1
 
       - name: Authenticate npm (expects a CI Automation token)
         run: |
