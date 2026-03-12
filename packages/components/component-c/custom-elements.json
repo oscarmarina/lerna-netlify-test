@@ -23,7 +23,7 @@
               "type": {
                 "text": "string"
               },
-              "default": "'Hey there'",
+              "default": "'Hey there C'",
               "description": "The heading to say \"Hello\" to.",
               "attribute": "heading"
             },
@@ -77,7 +77,7 @@
               "type": {
                 "text": "string"
               },
-              "default": "'Hey there'",
+              "default": "'Hey there C'",
               "description": "The heading to say \"Hello\" to.",
               "fieldName": "heading"
             },

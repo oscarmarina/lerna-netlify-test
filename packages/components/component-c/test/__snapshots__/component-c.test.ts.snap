@@ -9,7 +9,7 @@ exports[`ComponentC > Semantic Dom and a11y > LIGHT DOM - Structure test > LIGHT
 
 exports[`ComponentC > Semantic Dom and a11y > SHADOW DOM - Structure test > SHADOW DOM 1`] = `
 "<h1>
-  Hello, Hey there!
+  Hello, Hey there C!
 </h1>
 <button>
   Counter: 5
