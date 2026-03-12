@@ -10,10 +10,10 @@ An example element.
 
 ##### Fields
 
-| Name      | Privacy | Type     | Default       | Description                                      | Inherited From |
-| --------- | ------- | -------- | ------------- | ------------------------------------------------ | -------------- |
-| `heading` |         | `string` | `'Hey there'` | The heading to say "Hello" to.                   |                |
-| `counter` |         | `number` | `5`           | The number of times the button has been clicked. |                |
+| Name      | Privacy | Type     | Default         | Description                                      | Inherited From |
+| --------- | ------- | -------- | --------------- | ------------------------------------------------ | -------------- |
+| `heading` |         | `string` | `'Hey there C'` | The heading to say "Hello" to.                   |                |
+| `counter` |         | `number` | `5`             | The number of times the button has been clicked. |                |
 
 ##### Methods
 
