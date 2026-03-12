@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.0.4](https://github.com/oscarmarina/lerna-netlify-test/compare/v1.0.3...v1.0.4) (2026-03-12)
+
+
+### Bug Fixes
+
+* override install-strategy for lerna version lockfile sync ([8ee5e90](https://github.com/oscarmarina/lerna-netlify-test/commit/8ee5e90be291a60e95222fc93655604591be439c))
+
 ## [1.0.3](https://github.com/oscarmarina/lerna-netlify-test/compare/v1.0.2...v1.0.3) (2025-11-14)
 
 ## [1.0.2](https://github.com/oscarmarina/lerna-netlify-test/compare/v1.0.1...v1.0.2) (2025-10-26)
