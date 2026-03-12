@@ -9,7 +9,8 @@
     "version": {
       "conventionalCommits": true,
       "conventionalGraduate": true,
-      "message": "chore: publish"
+      "message": "chore: publish",
+      "noLockfile": true
     }
   },
   "ignoreChanges": [
