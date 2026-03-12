@@ -10,7 +10,7 @@
       "conventionalCommits": true,
       "conventionalGraduate": true,
       "message": "chore: publish",
-      "noLockfile": true
+      "npmClientArgs": ["--install-strategy=hoisted"]
     }
   },
   "ignoreChanges": [
