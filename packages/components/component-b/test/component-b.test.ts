@@ -25,9 +25,9 @@ describe('ComponentB', () => {
       fixtureCleanup();
     });
 
-    it('has a default heading "Hey there" and counter 5', () => {
+    it('has a default heading "Hey there B" and counter 5', () => {
       const button = elLocator.getByText('Counter: 5').query();
-      const heading = elLocator.getByText('Hey there').query();
+      const heading = elLocator.getByText('Hey there B').query();
       expect(button).toBeTruthy();
       expect(heading).toBeTruthy();
     });
