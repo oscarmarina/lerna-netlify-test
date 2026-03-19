@@ -9,8 +9,7 @@
     "version": {
       "conventionalCommits": true,
       "conventionalGraduate": true,
-      "message": "chore: publish",
-      "npmClientArgs": ["--install-strategy=hoisted"]
+      "message": "chore: publish"
     }
   },
   "ignoreChanges": [
