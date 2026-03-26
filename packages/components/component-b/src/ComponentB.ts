@@ -30,7 +30,7 @@ export class ComponentB extends LitElement {
 
   override render() {
     return html`
-      <h1>${this.sayHello(this.heading)}!!</h1>
+      <h1>${this.sayHello(this.heading)}!</h1>
       <button @click=${this.#onClick}>Counter: ${this.counter}</button>
       <hr />
       <slot></slot>
