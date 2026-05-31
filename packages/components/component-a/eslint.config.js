@@ -2,15 +2,17 @@ import js from '@eslint/js';
 import {configs as wc} from 'eslint-plugin-wc';
 import {configs as lit} from 'eslint-plugin-lit';
 import {default as litA11y} from 'eslint-plugin-lit-a11y';
-import {flatConfigs as importPlugin} from 'eslint-plugin-import';
+import {flatConfigs as importPlugin, createNodeResolver} from 'eslint-plugin-import-x';
 import {configs as tseslint, parser as tsParser} from 'typescript-eslint';
 import htmlEslint from '@html-eslint/eslint-plugin';
 import htmlEslintParser from '@html-eslint/parser';
 import eslintPluginHtml from 'eslint-plugin-html';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import globals from 'globals';
+import path from 'node:path';
 
 const fileTypes = '{js,ts,mjs}';
+const rootPackageDir = path.resolve(import.meta.dirname, '../../..');
 
 //
 // ──────────────────────────────────────────────────────────────
@@ -34,7 +36,7 @@ const baseConfig = [
 
 //
 // ──────────────────────────────────────────────────────────────
-// eslint-plugin-import
+// eslint-plugin-import-x
 // ──────────────────────────────────────────────────────────────
 //
 const importFilesConfig = [importPlugin.recommended, importPlugin.typescript].map((conf) => ({
@@ -52,19 +54,21 @@ const importFilesConfig = [importPlugin.recommended, importPlugin.typescript].ma
 const importFilesRules = {
   files: [`**/*.${fileTypes}`],
   rules: {
-    'import/extensions': ['error', 'always', {ignorePackages: true}],
-    'import/no-extraneous-dependencies': [
+    'import-x/extensions': ['error', 'always', {ignorePackages: true}],
+    'import-x/no-extraneous-dependencies': [
       'error',
       {
+        packageDir: [import.meta.dirname, rootPackageDir],
         devDependencies: [
+          `**/demo/**/*.${fileTypes}`,
           `**/test/**/*.${fileTypes}`,
           `**/*.config.${fileTypes}`,
           `**/*.conf.${fileTypes}`,
         ],
       },
     ],
-    'import/no-unresolved': 'off',
-    'import/prefer-default-export': 'off',
+    'import-x/no-unresolved': 'off',
+    'import-x/prefer-default-export': 'off',
   },
 };
 
@@ -73,11 +77,12 @@ const importFilesRules = {
 // eslint-plugin-lit-a11y
 // ──────────────────────────────────────────────────────────────
 //
-// @ts-ignore
-const litA11yFilesConfig = [litA11y.configs.recommended].map((conf) => ({
-  ...conf,
-  files: [`**/*.${fileTypes}`],
-}));
+const litA11yFilesConfig = [
+  {
+    ...litA11y.configs.recommended,
+    files: [`**/*.${fileTypes}`],
+  },
+];
 
 const litA11yFilesRules = {
   files: [`**/*.${fileTypes}`],
@@ -93,10 +98,12 @@ const litA11yFilesRules = {
 // eslint-plugin-wc
 // ──────────────────────────────────────────────────────────────
 //
-const wcFilesConfig = [wc['flat/recommended']].map((conf) => ({
-  ...conf,
-  files: [`**/*.${fileTypes}`],
-}));
+const wcFilesConfig = [
+  {
+    ...wc['flat/recommended'],
+    files: [`**/*.${fileTypes}`],
+  },
+];
 
 const wcFilesRules = {
   files: [`**/*.${fileTypes}`],
@@ -110,10 +117,12 @@ const wcFilesRules = {
 // eslint-plugin-lit
 // ──────────────────────────────────────────────────────────────
 //
-const litFilesConfig = [lit['flat/recommended']].map((conf) => ({
-  ...conf,
-  files: [`**/*.${fileTypes}`],
-}));
+const litFilesConfig = [
+  {
+    ...lit['flat/recommended'],
+    files: [`**/*.${fileTypes}`],
+  },
+];
 
 const litFilesRules = {
   files: [`**/*.${fileTypes}`],
@@ -134,13 +143,10 @@ const litFilesRules = {
 const tsFilesConfig = [...tseslint.strict, ...tseslint.stylistic].map((conf) => ({
   ...conf,
   files: ['**/*.ts'],
-  // @ts-ignore
   ...(conf.languageOptions && {
     languageOptions: {
-      // @ts-ignore
       ...conf.languageOptions,
       parserOptions: {
-        // @ts-ignore
         ...conf.languageOptions.parserOptions,
         projectService: {
           allowDefaultProject: [
@@ -174,27 +180,27 @@ const tsFilesRules = {
 // HTML
 // ──────────────────────────────────────────────────────────────
 //
-// @ts-ignore
-const htmlFilesConfig = [htmlEslint.configs['flat/recommended']].map((conf) => ({
-  ...conf,
-  files: ['**/*.html'],
-  plugins: {
-    ...conf.plugins,
-    '@html-eslint': htmlEslint,
+const htmlFilesConfig = [
+  {
+    ...htmlEslint.configs['flat/recommended'],
+    files: ['**/*.html'],
+    plugins: {
+      '@html-eslint': htmlEslint,
+    },
+    languageOptions: {
+      parser: htmlEslintParser,
+    },
   },
-  languageOptions: {
-    ...conf.languageOptions,
-    parser: htmlEslintParser,
-  },
-}));
+];
 
 const htmlFilesRules = {
   files: ['**/*.html'],
   rules: {
     '@html-eslint/indent': 'off',
     '@html-eslint/require-closing-tags': 'off',
-    '@html-eslint/no-extra-spacing-attrs': 'off',
+    '@html-eslint/no-extra-spacing-tags': 'off',
     '@html-eslint/attrs-newline': 'off',
+    '@html-eslint/use-baseline': ['error', {available: 'newly'}],
   },
 };
 
@@ -255,14 +261,14 @@ export default [
   eslintConfigPrettier,
 
   {
+    settings: {
+      'import-x/resolver-next': [createNodeResolver({extensions: ['.js', '.ts']})],
+    },
+  },
+
+  {
     rules: {
-      'no-unused-expressions': [
-        'error',
-        {
-          allowShortCircuit: true,
-          allowTernary: true,
-        },
-      ],
+      'no-unused-expressions': ['error', {allowShortCircuit: true, allowTernary: true}],
       'no-empty-function': 'error',
     },
   },
