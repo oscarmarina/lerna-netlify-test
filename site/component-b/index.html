@@ -1,11 +1,9 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>Demo - component-b</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" href="data:," />
-    <meta name="description" content="component-b" />
+    <title>Demo - component-b</title>
     <style>
       html,
       body {
@@ -14,6 +12,8 @@
         font-family: sans-serif;
       }
     </style>
+    <link rel="icon" href="data:," />
+    <meta name="description" content="component-b" />
   </head>
   <body>
     <script type="module">
@@ -21,13 +21,11 @@
 
       const heading = 'World!';
       render(
-        html`
-          <component-b
-            @counterchange="${(ev) => console.log('==>', ev.detail)}"
-            .heading="${heading}"
-            >some light-dom</component-b
-          >
-        `,
+        html`<component-b
+          @counterchange="${(ev) => console.log('==>', ev.detail)}"
+          .heading="${heading}"
+          >some light-dom</component-b
+        >`,
         document.body
       );
     </script>
