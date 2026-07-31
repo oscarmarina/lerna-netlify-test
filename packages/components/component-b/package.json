@@ -38,7 +38,8 @@
   ],
   "scripts": {
     "analyze": "cem analyze --litelement --globs \"src/**/*.{js,ts}\" \"index.js\"",
-    "build": "npm run dev:vite && npm run build:lib && npm run build:tsc",
+    "build": "npm run build:lib && npm run build:tsc",
+    "build:demo": "npm run dev:vite",
     "build:lib": "vite build --config vite.lib.config.js",
     "build:tsc": "tsc",
     "dev:vite": "vite build",
@@ -46,7 +47,6 @@
     "format:eslint": "eslint . --fix",
     "format:prettier": "prettier \"**/*.{js,ts,css,scss,html,json}\" --write --ignore-path .prettierignore",
     "format:stylelint": "stylelint \"{demo,src}/**/*.{js,ts,css,scss,html}\" --fix --ignore-path .prettierignore",
-    "postinstall": "npm run sort:package",
     "prepare": "husky",
     "preview:vite": "vite preview",
     "sass:watch": "sass-style-template -j ts",
