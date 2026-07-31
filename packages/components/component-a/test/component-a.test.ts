@@ -25,11 +25,16 @@ describe('ComponentA', () => {
       fixtureCleanup();
     });
 
-    it('has a default heading "Hey there A" and counter 5', () => {
-      const button = elLocator.getByText('Counter: 5').query();
-      const heading = elLocator.getByText('Hey there A').query();
-      expect(button).toBeTruthy();
-      expect(heading).toBeTruthy();
+    it('has a default heading "Hey there A" and counter 5', async () => {
+      const heading = elLocator.getByRole('heading', {
+        level: 1,
+        name: 'Hello, Hey there A.!',
+      });
+      const button = elLocator.getByRole('button', {
+        name: 'Counter: 5',
+      });
+      await expect.element(heading).toHaveAccessibleName('Hello, Hey there A.!');
+      await expect.element(button).toHaveAccessibleName('Counter: 5');
     });
 
     it('SHADOW DOM - Structure test', () => {
