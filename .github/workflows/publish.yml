@@ -46,13 +46,16 @@ jobs:
           persist-credentials: true
           fetch-tags: true
 
+      # Fetch all tags FIRST (for Lerna version detection)
+      - name: Fetch all tags (for Lerna version detection)
+        run: |
+          git fetch --tags origin
+          git fetch --all
+
       # Fetch base early so commit-range detection can reference origin/<base>
       - name: Fetch base branch (for commit range detection)
         if: ${{ github.event_name == 'pull_request' }}
         run: git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
-
-      - name: Fetch all tags (for Lerna version detection)
-        run: git fetch --tags origin
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -146,6 +149,15 @@ jobs:
             echo "skip_lerna_reason=none" >> "$GITHUB_OUTPUT"
             echo "SKIP_LERNA_REASON=none" >> "$GITHUB_ENV"
           fi
+
+      - name: Debug git state
+        run: |
+          echo "=== Git branches ==="
+          git branch -a
+          echo "=== Git tags (last 10) ==="
+          git tag -l | tail -10
+          echo "=== Git log (last 5) ==="
+          git log --oneline -5
 
       - name: Version & publish (Lerna)
         if: ${{ steps.skip.outputs.skip_lerna == 'false' }}
