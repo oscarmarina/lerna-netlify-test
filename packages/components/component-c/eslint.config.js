@@ -79,6 +79,7 @@ const importFilesRules = {
 //
 const litA11yFilesConfig = [
   {
+    // @ts-ignore
     ...litA11y.configs.recommended,
     files: [`**/*.${fileTypes}`],
   },
@@ -143,10 +144,13 @@ const litFilesRules = {
 const tsFilesConfig = [...tseslint.strict, ...tseslint.stylistic].map((conf) => ({
   ...conf,
   files: ['**/*.ts'],
+  // @ts-ignore
   ...(conf.languageOptions && {
     languageOptions: {
+      // @ts-ignore
       ...conf.languageOptions,
       parserOptions: {
+        // @ts-ignore
         ...conf.languageOptions.parserOptions,
         projectService: {
           allowDefaultProject: [
