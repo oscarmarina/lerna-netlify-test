@@ -25,15 +25,15 @@ describe('ComponentA', () => {
       fixtureCleanup();
     });
 
-    it('has a default heading "Hey there Compo Compo A" and counter 5', async () => {
+    it('has a default heading "Hey there A" and counter 5', async () => {
       const heading = elLocator.getByRole('heading', {
         level: 1,
-        name: 'Hello, Hey there Compo Compo A!',
+        name: 'Hello, Hey there A!',
       });
       const button = elLocator.getByRole('button', {
         name: 'Counter: 5',
       });
-      await expect.element(heading).toHaveAccessibleName('Hello, Hey there Compo Compo A!');
+      await expect.element(heading).toHaveAccessibleName('Hello, Hey there A!');
       await expect.element(button).toHaveAccessibleName('Counter: 5');
     });
 
