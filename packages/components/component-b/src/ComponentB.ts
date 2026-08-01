@@ -20,7 +20,7 @@ export class ComponentB extends LitElement {
    * The heading to say "Hello" to.
    */
   @property({type: String})
-  heading = 'Hey there Compo Compo B';
+  heading = 'Hey there B';
 
   /**
    * The number of times the button has been clicked.
