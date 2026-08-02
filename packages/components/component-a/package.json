@@ -12,26 +12,37 @@
   "type": "module",
   "exports": {
     ".": {
+      "development": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
     "./package.json": {
       "default": "./package.json"
     },
     "./ComponentA.js": {
+      "development": "./src/ComponentA.ts",
+      "types": "./dist/ComponentA.d.ts",
       "default": "./dist/ComponentA.js"
     },
     "./component-a.js": {
+      "development": "./src/define/component-a.ts",
+      "types": "./dist/define/component-a.d.ts",
       "default": "./dist/define/component-a.js"
     },
     "./index.js": {
+      "development": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
     "./component-a-styles.css.js": {
+      "development": "./src/styles/component-a-styles.css.ts",
+      "types": "./dist/styles/component-a-styles.css.d.ts",
       "default": "./dist/styles/component-a-styles.css.js"
     }
   },
   "main": "dist/index.js",
   "module": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "/src/",
     "/dist/"
