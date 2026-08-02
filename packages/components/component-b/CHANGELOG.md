@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.15](https://github.com/oscarmarina/lerna-netlify-test/compare/%40blockquote-playground%2Fcomponent-b%401.0.14...%40blockquote-playground%2Fcomponent-b%401.0.15) (2026-08-02)
+
+**Note:** Version bump only for package @blockquote-playground/component-b
+
+
+
+
+
 ## [1.0.14](https://github.com/oscarmarina/lerna-netlify-test/compare/%40blockquote-playground%2Fcomponent-b%401.0.13...%40blockquote-playground%2Fcomponent-b%401.0.14) (2026-08-02)
 
 **Note:** Version bump only for package @blockquote-playground/component-b
