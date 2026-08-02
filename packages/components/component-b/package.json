@@ -12,32 +12,43 @@
   "type": "module",
   "exports": {
     ".": {
+      "development": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
     "./package.json": {
       "default": "./package.json"
     },
     "./ComponentB.js": {
+      "development": "./src/ComponentB.ts",
+      "types": "./dist/ComponentB.d.ts",
       "default": "./dist/ComponentB.js"
     },
     "./component-b.js": {
+      "development": "./src/define/component-b.ts",
+      "types": "./dist/define/component-b.d.ts",
       "default": "./dist/define/component-b.js"
     },
     "./index.js": {
+      "development": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
     "./component-b-styles.css.js": {
+      "development": "./src/styles/component-b-styles.css.ts",
+      "types": "./dist/styles/component-b-styles.css.d.ts",
       "default": "./dist/styles/component-b-styles.css.js"
     }
   },
   "main": "dist/index.js",
   "module": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "/src/",
     "/dist/"
   ],
   "scripts": {
-    "analyze": "cem analyze --litelement --globs \"src/**/*.{js,ts}\" \"index.js\"",
+    "analyze": "cem analyze --litelement --globs \"{src,define}/**/*.{js,ts}\" \"index.js\"",
     "build": "npm run build:lib && npm run build:tsc",
     "build:demo": "npm run dev:vite",
     "build:lib": "vite build --config vite.lib.config.js",
@@ -47,7 +58,7 @@
     "format:eslint": "eslint . --fix",
     "format:prettier": "prettier \"**/*.{js,ts,css,scss,html,json}\" --write --ignore-path .prettierignore",
     "format:stylelint": "stylelint \"{demo,src}/**/*.{js,ts,css,scss,html}\" --fix --ignore-path .prettierignore",
-    "prepare": "husky",
+    "postinstall": "npm run sort:package",
     "preview:vite": "vite preview",
     "sass:watch": "sass-style-template -j ts",
     "sort:package": "npx sort-package-json",
