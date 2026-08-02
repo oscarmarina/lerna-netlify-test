@@ -26,7 +26,7 @@
 
 ## build
 **/_site
-**/dist
+!**/dist
 **/dev
 **/build
 **/.tmp
