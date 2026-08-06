@@ -7,6 +7,11 @@
     "web-component",
     "lit-element"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oscarmarina/lerna-netlify-test.git",
+    "directory": "packages/components/component-a"
+  },
   "license": "MIT",
   "author": "component-a",
   "type": "module",
@@ -60,6 +65,7 @@
     "format:stylelint": "stylelint \"{demo,src}/**/*.{js,ts,css,scss,html}\" --fix --ignore-path .prettierignore",
     "prepare": "husky",
     "preview:vite": "vite preview",
+    "sass": "sass-style-template -j ts --once",
     "sass:watch": "sass-style-template -j ts",
     "sort:package": "npx sort-package-json",
     "start": "concurrently -k -r \"npm:vite\" \"npm:sass:watch\"",
