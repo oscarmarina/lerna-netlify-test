@@ -3,7 +3,6 @@
     "allowArbitraryExtensions": true,
     "declaration": true,
     "declarationDir": "./dist/",
-    "declarationMap": true,
     "emitDeclarationOnly": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
@@ -25,10 +24,10 @@
     "resolveJsonModule": true,
     "resolvePackageJsonExports": true,
     "resolvePackageJsonImports": true,
+    "skipLibCheck": true,
     "customConditions": [
       "workspaces"
     ],
-    "rootDir": "./src/",
     "sourceMap": true,
     "strict": true,
     "stripInternal": true,
@@ -40,6 +39,7 @@
     "verbatimModuleSyntax": true
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "test/**/*.ts"
   ]
 }

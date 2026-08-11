@@ -11,8 +11,8 @@ import eslintConfigPrettier from 'eslint-config-prettier';
 import globals from 'globals';
 import path from 'node:path';
 
-const fileTypes = '{js,ts,mjs}';
 const rootPackageDir = path.resolve(import.meta.dirname, '../../..');
+const fileTypes = '{js,ts,mjs}';
 
 //
 // ──────────────────────────────────────────────────────────────
@@ -153,11 +153,7 @@ const tsFilesConfig = [...tseslint.strict, ...tseslint.stylistic].map((conf) => 
         // @ts-ignore
         ...conf.languageOptions.parserOptions,
         projectService: {
-          allowDefaultProject: [
-            `test/*.${fileTypes}`,
-            `*.config.${fileTypes}`,
-            `*.conf.${fileTypes}`,
-          ],
+          allowDefaultProject: [`*.config.${fileTypes}`, `*.conf.${fileTypes}`],
         },
         tsconfigRootDir: import.meta.dirname,
       },
