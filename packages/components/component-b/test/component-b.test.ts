@@ -4,7 +4,7 @@ import {fixture, fixtureCleanup} from '@open-wc/testing-helpers';
 import {chaiA11yAxe} from 'chai-a11y-axe';
 import {getDiffableHTML} from '@open-wc/semantic-dom-diff/get-diffable-html.js';
 import {html} from 'lit';
-import {ComponentB} from '../src/ComponentB.js';
+import type {ComponentB} from '../src/ComponentB.js';
 import '../src/define/component-b.js';
 
 chai.use(chaiA11yAxe);

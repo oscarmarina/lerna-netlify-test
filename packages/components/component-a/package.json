@@ -55,10 +55,9 @@
   "scripts": {
     "analyze": "cem analyze --litelement --globs \"src/**/*.{js,ts}\" \"index.js\"",
     "build": "npm run build:lib && npm run build:tsc",
-    "build:demo": "npm run dev:vite",
-    "build:lib": "vite build --config vite.lib.config.js",
-    "build:tsc": "tsc",
-    "dev:vite": "vite build",
+    "build:demo": "vite build",
+    "build:lib": "vite build --config ./vite.lib.config.js",
+    "build:tsc": "tsc -p ./tsconfig.build.json",
     "format": "npm run format:eslint && npm run format:prettier && npm run format:stylelint",
     "format:eslint": "eslint . --fix",
     "format:prettier": "prettier \"**/*.{js,ts,css,scss,html,json}\" --write --ignore-path .prettierignore",
