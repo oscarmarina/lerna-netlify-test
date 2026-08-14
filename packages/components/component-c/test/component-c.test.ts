@@ -1,4 +1,3 @@
-/* eslint-disable import-x/no-extraneous-dependencies */
 import {describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi, chai} from 'vitest';
 import {type LocatorSelectors, utils} from 'vitest/browser';
 import {fixture, fixtureCleanup} from '@open-wc/testing-helpers';
