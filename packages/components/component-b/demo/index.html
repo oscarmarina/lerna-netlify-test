@@ -21,11 +21,13 @@
 
       const heading = 'World!';
       render(
-        html`<component-b
-          @counterchange="${(ev) => console.log('==>', ev.detail)}"
-          .heading="${heading}"
-          >some light-dom</component-b
-        >`,
+        html`
+          <component-b
+            @counterchange="${(ev) => console.log('==>', ev.detail)}"
+            .heading="${heading}"
+            >some light-dom</component-b
+          >
+        `,
         document.body
       );
     </script>
